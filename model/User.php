@@ -1,43 +1,45 @@
 <?php
-  namespace App\Models\User;
+  namespace App\Models;
   use System\Database\Connect;
   use \PDO;
 
-  class User {
-    private $conn;
-
-    private function __construct() {
-      $this->conn = Connect::getInstance();
-    }
-
-    public function save($nome, $senha, $email) {
+  class UserModel {
+    public static function save($nome, $senha, $email) {
       $insert = 'INSERT INTO USER VALUES(0, :nome, :senha, :email)';
-      $stmt = $this->conn->prepare($insert);
+      $stmt = Connect::getInstance()->prepare($insert);
       $stmt->bindValue(':nome', $nome);
       $stmt->bindValue(':senha', $senha);
       $stmt->bindValue(':email', $email);
       $stmt->execute();
     }
 
-    public function delete($id) {
+    public static function delete($id) {
       $delete = 'DELETE FROM USER WHERE ID = :id';
-      $stmt = $this->conn->prepare($delete);
+      $stmt = Connect::getInstance()->prepare($delete);
       $stmt->bindValue(':id', $id);
       $stmt->execute();
     }
 
-    public function get_all () {
+    public static function get_all() {
       $select = 'SELECT * FROM USER';
-      $stmt = $this->conn->query($select);
+      $stmt = Connect::getInstance()->query($select);
       return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function get ($id) {
+    public static function get($id) {
       $select = 'SELECT * FROM USER WHERE ID = :id';
-      $stmt = $this->conn->prepare($select);
+      $stmt = Connect::getInstance()->prepare($select);
       $stmt->bindValue(':id', $id);
       $stmt->execute();
       return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    public static function email_exists($email) {
+      $select = 'SELECT * FROM USER WHERE EMAIL = :email';
+      $stmt = Connect::getInstance()->prepare($select);
+      $stmt->bindValue(':email', $email);
+      $stmt->execute();
+      return $stmt->rowCount() > 0;
     }
   }
 ?>

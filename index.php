@@ -1,4 +1,1 @@
-<?php
-  use App\Controllers\User;
-
-?>
+<?php ?>
