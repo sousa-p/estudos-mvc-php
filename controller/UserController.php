@@ -3,6 +3,10 @@
   use App\Models\UserModel;
 
   class UserController {
+    public function __contruct ($data, $model, $service) {
+      // Criar
+    }
+
     public function create($nome, $senha, $email) {
       if (empty($nome) || empty($senha) || empty($email)) {
         echo json_encode(['error' => 'Dados vazios']);
@@ -11,7 +15,6 @@
         echo json_encode(['error' => 'Email já registrado']);
         return False;
       }
-      UserModel::save($nome, $senha, $email);
     }
 
     public function delete($id) {
