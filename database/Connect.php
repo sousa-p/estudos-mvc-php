@@ -1,5 +1,6 @@
 <?php
 namespace System\Database;
+use \PDO;
 use \PDOException;
 
 final class Connect {
@@ -15,14 +16,18 @@ final class Connect {
       PDO::ATTR_CASE => PDO::CASE_NATURAL
   ];
   public static $instance;
-  public static function getInstance() {
-    try {
-      $dsn = "mysql:host=" . self::HOST . ";dbname=" . self::DATABASE . ";charset=" . self::CHARSET;
-      self::$instance = new PDO($dsn, self::USER, self::PASSWORD, self::OPTIONS);
-    } catch (PDOException $error) {
-      die("Falha na conexão com o banco de dados: " . $error->getMessage());
+  public static function get_instance() {
+    if (empty(self::$instance)) {
+      try {
+        $dsn = "mysql:host=" . self::HOST . ";dbname=" . self::DATABASE . ";charset=" . self::CHARSET;
+        self::$instance = new PDO($dsn, self::USER, self::PASSWORD, self::OPTIONS);
+      } catch (PDOException $error) {
+        die("Falha na conexão com o banco de dados: " . $error->getMessage());
+      }
+      return self::$instance;
     }
-    return self::$instance;
   }
+  
+  private function __construct(){ }
+  private function __clone(){ }
 }
-?>

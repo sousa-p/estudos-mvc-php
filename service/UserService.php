@@ -1,6 +1,6 @@
 <?php
   namespace App\Services;
-  
+  use PDO;
   class UserService {
     private $conn;
     private $model;
@@ -11,41 +11,47 @@
     }
 
     public function save() {
-      $insert = 'INSERT INTO USER VALUES(0, :nome, :senha, :email)';
+      $insert = 'INSERT INTO USER VALUES(0, :NOME, :senha, :email)';
       $stmt = $this->conn->prepare($insert);
-      $stmt->bindValue(':nome', $this->model->nome);
-      $stmt->bindValue(':senha', $this->model->senha);
-      $stmt->bindValue(':email', $this->model->email);
+      $stmt->bindValue(':NOME', $this->model->NOME);
+      $stmt->bindValue(':SENHA', $this->model->SENHA);
+      $stmt->bindValue(':EMAIL', $this->model->EMAIL);
       $stmt->execute();
     }
 
-    public static function delete($id) {
-      $delete = 'DELETE FROM USER WHERE ID = :id';
+    public function delete() {
+      $delete = 'DELETE FROM USER WHERE ID = :ID';
       $stmt = $this->conn->prepare($delete);
-      $stmt->bindValue(':id', $this->model->id);
+      $stmt->bindValue(':ID', (int)$this->model->ID);
       $stmt->execute();
     }
 
-    public static function get_all() {
-      $select = 'SELECT * FROM USER';
-      $stmt = $this->conn->query($select);
-      return $stmt->fetchAll(PDO::FETCH_OBJ);
-    }
-
-    public static function get($id) {
-      $select = 'SELECT * FROM USER WHERE ID = :id';
+    public function get_email() {
+      $select = 'SELECT COUNT(*) as count FROM USER WHERE EMAIL = :EMAIL';
       $stmt = $this->conn->prepare($select);
-      $stmt->bindValue(':id', $this->model->id);
+      $stmt->bindValue(':EMAIL', $this->model->__get('EMAIL'));
       $stmt->execute();
-      return $stmt->fetch(PDO::FETCH_OBJ);
+      return $stmt->fetch();
     }
 
-    public static function email_exists($email) {
-      $select = 'SELECT * FROM USER WHERE EMAIL = :email';
+    public function get_senha () {
+      $select = 'SELECT SENHA FROM USER WHERE ID = :ID';
       $stmt = $this->conn->prepare($select);
-      $stmt->bindValue(':email', $this->model->email);
+      $stmt->bindValue(':ID', (int)$this->model->ID);
       $stmt->execute();
-      return $stmt->rowCount() > 0;
+      return $stmt->fetch()->SENHA;
+    }
+
+    public function checar_credenciais_login () {
+      if (password_verify($this->model->__get('SENHA'), $this->get_senha())) {
+        return [
+          'type' => 'success',
+          'msg' => 'Login efetuado com sucesso'
+        ];
+      }
+      return [
+        'type' => 'error',
+        'msg' => 'Credenciais erradas'
+      ];
     }
   }
-?>
